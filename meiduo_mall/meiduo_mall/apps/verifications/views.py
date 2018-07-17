@@ -7,9 +7,11 @@ from rest_framework.response import Response
 
 from meiduo_mall.libs.captcha.captcha import captcha
 from meiduo_mall.libs.yuntongxun.sms import CCP
-from verifications.content import IMAGE_CODE_REDIS_EXPIRES, SMS_CODE_REDIS_EXPIRES, SEND_SMS_CODE_INTERVAL
+from verifications.content import IMAGE_CODE_REDIS_EXPIRES, SMS_CODE_REDIS_EXPIRES, SEND_SMS_CODE_INTERVAL, \
+    SMS_CODE_TEMP_ID
 from verifications.serializers import ImageCodeCheckSerializer
 from random import randint
+from celery_tasks.sms import tasks as sms_tasks
 
 
 # Create your views here.
@@ -58,8 +60,14 @@ class SMSCodeView(GenericAPIView):
         pl.execute()
 
         # 发送短信给验证码
-        sms_code_exprice = str(SMS_CODE_REDIS_EXPIRES // 60)
-        ccp = CCP()
-        ccp.send_template_sms(mobile, [sms_code, sms_code_exprice], 1)
+        # sms_code_exprice = str(SMS_CODE_REDIS_EXPIRES // 60)
+        # ccp = CCP()
+        # ccp.send_template_sms(mobile, [sms_code, sms_code_exprice], 1)
+        #
+        # return Response({'message': 'ok'})
 
-        return Response({'message': 'ok'})
+        # 使用celery异步任务发送短信
+        sms_code_expires = str(SMS_CODE_REDIS_EXPIRES // 60)
+        sms_tasks.send_sms_code.delay(mobile, sms_code, sms_code_expires)
+
+        return Response({"message": "OK"})
