@@ -6,7 +6,9 @@
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
-    <schema id="3" parent="1" name="information_schema"/>
+    <schema id="3" parent="1" name="information_schema">
+      <Visible>1</Visible>
+    </schema>
     <table id="4" parent="2" name="auth_group"/>
     <table id="5" parent="2" name="auth_group_permissions"/>
     <table id="6" parent="2" name="auth_permission"/>
