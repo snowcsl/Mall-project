@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from meiduo_mall.libs.captcha.captcha import captcha
 from meiduo_mall.libs.yuntongxun.sms import CCP
 from verifications.content import IMAGE_CODE_REDIS_EXPIRES, SMS_CODE_REDIS_EXPIRES, SEND_SMS_CODE_INTERVAL
-from verifications.serializers1 import ImageCodeCheckSerializer
+from verifications.serializers import ImageCodeCheckSerializer
 from random import randint
 
 
