@@ -55,7 +55,7 @@ class SMSCodeView(GenericAPIView):
         # 将短信验证码写入缓存
         conn = get_redis_connection('verify_codes')
         pl = conn.pipeline()
-        pl.setex('sms_%s' % mobile, SMS_CODE_REDIS_EXPIRES, sms_code)
+        pl.setex('sms_code_%s' % mobile, SMS_CODE_REDIS_EXPIRES, sms_code)
         pl.setex('sms_flag_%s' % mobile, SEND_SMS_CODE_INTERVAL, 1)
         pl.execute()
 
