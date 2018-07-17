@@ -1,28 +1,32 @@
 from django.shortcuts import render
-from users.serializers import CreateUserSerializer
-from rest_framework.generics import CreateAPIView
-from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from rest_framework.response import Response
+from rest_framework.generics import CreateAPIView
 from users.models import User
+from users.serializers import CreateUserSerializer
 
 
 # Create your views here.
 
-# 判断账号是否存在
+# url(r'^usernames/(?P<username>\w{5,20})/count/$', views.UsernameCountView.as_view()),
 class UsernameCountView(APIView):
     """
     用户名数量
     """
-    def get(self,request,username):
+
+    def get(self, request, username):
+        # 获取用户名数据对象的数量
+
         count = User.objects.filter(username=username).count()
 
-        data = {
-            'username':username,
-            'count':count
-        }
+        # 返回数量
 
-        return Response(data)
+        return Response(
+            {
+                'count': count,
+                'username': username,
+            }
+        )
 
 
 class MobileCountView(APIView):
@@ -31,14 +35,18 @@ class MobileCountView(APIView):
     """
 
     def get(self, request, mobile):
+        # 获取手机号数据对象的数量
+
         count = User.objects.filter(mobile=mobile).count()
 
-        data = {
-            'mobile': mobile,
-            'count': count
-        }
+        # 返回数量
 
-        return Response(data)
+        return Response(
+            {
+                'count': count,
+                'mobile': mobile,
+            }
+        )
 
 
 # url(r'^users/$', views.UserView.as_view()),
