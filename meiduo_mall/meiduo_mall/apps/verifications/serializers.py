@@ -25,11 +25,10 @@ class ImageCodeCheckSerializer(serializers.Serializer):
         conn.delete('img_%s' % image_code_id)
 
         # 验证码比对
-        if text.lower() != real_text.lower():
+        if text.lower() != real_text.decode().lower():
             raise serializers.ValidationError('验证码错误')
 
         # 判断短信验证码的时间
-        conn = get_redis_connection('verify_codes')
         mobile = self.context['view'].kwargs['mobile']
         flag = conn.get('sms_flag_%s' % mobile)
         if flag:

@@ -49,7 +49,7 @@ class SMSCodeView(GenericAPIView):
 
         # 生成短信验证码
         sms_code = '%06d' % randint(0, 999999)
-
+        print(sms_code)
         # 判断短信验证码的时间
 
         # 将短信验证码写入缓存
