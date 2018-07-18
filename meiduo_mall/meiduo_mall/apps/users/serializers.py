@@ -14,11 +14,12 @@ class CreateUserSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(max_length=20, min_length=8, write_only=True)
     sms_code = serializers.CharField(max_length=6, min_length=6, write_only=True)
     allow = serializers.CharField(write_only=True)
+    token = serializers.CharField(label='JWT token', read_only=True)
 
     class Meta:
         model = User
         # 指定那些字段生成序列化器字段
-        fields = ('id', 'username', 'password', 'password2', 'sms_code', 'mobile', 'allow')
+        fields = ('id', 'username', 'password', 'password2', 'sms_code', 'mobile', 'allow','token')
         # 对一些参数进行额外属性的添加
         extra_kwargs = {
             'username': {
