@@ -222,6 +222,12 @@ JWT_AUTH = {
 # 配置自定义的用户模型类
 AUTH_USER_MODEL = 'users.User'
 
+# 认证方法 在配置文件中告知Django使用我们自定义的认证后端
+AUTHENTICATION_BACKENDS = [
+    'users.utils.UsernameMobileAuthBackend',
+]
+
+
 # CORS
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8080',
