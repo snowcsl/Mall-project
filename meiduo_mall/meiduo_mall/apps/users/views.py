@@ -33,14 +33,11 @@ class MobileCountView(APIView):
     """
     手机号数量
     """
-
     def get(self, request, mobile):
         # 获取手机号数据对象的数量
-
         count = User.objects.filter(mobile=mobile).count()
 
         # 返回数量
-
         return Response(
             {
                 'count': count,

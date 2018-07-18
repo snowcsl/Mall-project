@@ -3,9 +3,9 @@ from rest_framework import serializers
 from django_redis import get_redis_connection
 
 
-class ImageCodeCheckSerializer(serializers.Serializer):
+class ImageCodeCheckSerializer(serializers.Serializer):  # 选择Serializer是因为序列化器的选择与模型类没有关系
     """
-    图片验证码校验序列化器
+    短信验证码校验序列化器
     """
     image_code_id = serializers.UUIDField()
     text = serializers.CharField(max_length=4, min_length=4)

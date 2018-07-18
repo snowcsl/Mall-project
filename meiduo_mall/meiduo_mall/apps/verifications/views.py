@@ -69,5 +69,6 @@ class SMSCodeView(GenericAPIView):
         # 使用celery异步任务发送短信
         sms_code_expires = str(SMS_CODE_REDIS_EXPIRES // 60)
         sms_tasks.send_sms_code.delay(mobile, sms_code, sms_code_expires)
+        # 通过调用delay()告知celery中的worker去执行send_sms_code,参数在delay中传递
 
         return Response({"message": "OK"})

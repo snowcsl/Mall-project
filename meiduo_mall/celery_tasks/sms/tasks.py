@@ -1,15 +1,13 @@
+# 保存发送短信的异步任务
+
 import logging
-
 import time
-
 from celery_tasks.main import app
 from .yuntongxun.sms import CCP
-
 logger = logging.getLogger("django")
 
 # 验证码短信模板
 SMS_CODE_TEMP_ID = 1
-
 
 # @app.task(name='send_sms_code')
 # def send_sms_code(mobile, code, expires):
@@ -26,7 +24,7 @@ SMS_CODE_TEMP_ID = 1
 #             logger.warning("发送验证码短信[失败][ mobile: %s ]" % mobile)
 
 
-@app.task(name='send_sms_code')
+@app.task(name='send_sms_code')  # 完成耗时任务的注册
 def send_sms_code(mobile, sms_code, sms_code_exprice):
     ccp = CCP()
     ccp.send_template_sms(mobile, [sms_code, sms_code_exprice], 1)
