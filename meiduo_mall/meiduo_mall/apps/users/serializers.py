@@ -98,13 +98,11 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user.save()
 
         # 签发jwt token  生成记录登录状态的token
-        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
-        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-
-        payload = jwt_payload_handler(user)
-        token = jwt_encode_handler(payload)
-
-        user.token = token
+        # jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        # jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        # payload = jwt_payload_handler(user)
+        # token = jwt_encode_handler(payload)
+        # user.token = token
 
         return user
 
