@@ -10,7 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from oauth.models import OAuthQQUser
-from oauth.serializers1 import OAuthQQUserSerializer
+from oauth.serializers import OAuthQQUserSerializer
 from .exceptions import OAuthQQAPIError
 from oauth.utils import OAuthQQ
 from django.conf import settings
