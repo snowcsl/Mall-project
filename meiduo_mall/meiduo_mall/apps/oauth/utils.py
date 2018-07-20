@@ -9,6 +9,7 @@ import urllib.parse
 from oauth import constants
 from .exceptions import OAuthQQAPIError
 from itsdangerous import TimedJSONWebSignatureSerializer as TJWSSerializer, BadData
+
 logger = logging.getLogger('django')
 
 
@@ -68,20 +69,22 @@ class OAuthQQ(object):
 
         return access_token
 
-    def get_openid(self,access_token):
+    def get_openid(self, access_token):
+
         # 构建获取Open_id的url
         url = 'https://graph.qq.com/oauth2.0/me?access_token=' + access_token
+
         try:
             # 发送请求
             resp = urlopen(url)
 
             # 从响应体中获取open_id
-            resp_data = resp.read() # bytes
-            resp_data = resp_data.decode() # str
+            resp_data = resp.read()  # bytes
+            resp_data = resp_data.decode()  # str
 
             # 解析
-            resp_data = resp_data[10,-4]
-            resp_dict = json.loads(resp_data) # json数据
+            resp_data = resp_data[10:-4]
+            resp_dict = json.loads(resp_data)  # json数据
         except Exception as e:
             logger.error('获取openid异常:%s' % e)
             raise OAuthQQAPIError
@@ -90,16 +93,17 @@ class OAuthQQ(object):
 
             return openid
 
-    def generate_bind_user_access_token(self,openid):
-        serializer = TJWSSerializer(settings.SECRET_KEY,constants.BIND_USER_ACCESS_TOKEN_EXPIRES)
-        token = serializer.dumps({'openid':openid})
+    def generate_bind_user_access_token(self, openid):
+        serializer = TJWSSerializer(settings.SECRET_KEY, constants.BIND_USER_ACCESS_TOKEN_EXPIRES)
+        token = serializer.dumps({'openid': openid})
         return token.decode()
 
-
-
-
-
-
-
-
-
+    @staticmethod
+    def check_bind_access_token(access_token):
+        serializer = TJWSSerializer(settings.SECRET_KEY, constants.BIND_USER_ACCESS_TOKEN_EXPIRES)
+        try:
+            data = serializer.loads(access_token)
+        except BadData:
+            return None
+        else:
+            return data['openid']
