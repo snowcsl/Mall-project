@@ -205,18 +205,18 @@ REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'meiduo_mall.utils.exceptions.exception_handler',
 
-    # 认证
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #     'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
-    #     'rest_framework.authentication.SessionAuthentication',
-    #     'rest_framework.authentication.BasicAuthentication',
-    # ),
+    # 认证机制
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
 # JWT
 # JWT_EXPIRATION_DELTA 指明token的有效期
 JWT_AUTH = {
-    # 'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
 }
 
@@ -228,7 +228,6 @@ AUTHENTICATION_BACKENDS = [
     'users.utils.UsernameMobileAuthBackend',
 ]
 
-
 # CORS
 CORS_ORIGIN_WHITELIST = (
     '127.0.0.1:8080',
@@ -238,9 +237,8 @@ CORS_ORIGIN_WHITELIST = (
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
-
 # QQ登录参数
-QQ_CLIENT_ID = ''
-QQ_CLIENT_SECRET = ''
-QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'
-QQ_STATE = '/'
+QQ_CLIENT_ID = '101474184'  # appid
+QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'  # appkey
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'  # qq登陆成功跳转的网址
+QQ_STATE = '/'  # 前端没有传状态时,返回首页
