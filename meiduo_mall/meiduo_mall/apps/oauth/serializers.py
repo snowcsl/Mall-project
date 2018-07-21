@@ -98,6 +98,7 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         user = validated_data.get('user', None)
+
         if not user:
             # 未注册用户
             # 先注册用户

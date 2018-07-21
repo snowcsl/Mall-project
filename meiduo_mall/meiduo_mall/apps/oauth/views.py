@@ -9,7 +9,7 @@ from itsdangerous import TimedJSONWebSignatureSerializer as TJS
 
 from oauth.models import OAuthQQUser
 from oauth.serializers import OAuthQQUserSerializer
-from oauth.utils import QAuthQQ
+from oauth.utils import OAuthQQ
 
 
 # Create your views here.
@@ -25,7 +25,7 @@ class QQAuthURLView(APIView):
         state = request.query_params.get('state', settings.QQ_STATE)
 
         # 创建qq对象
-        qq = QAuthQQ(state=state)
+        qq = OAuthQQ(state=state)
 
         # 获取登录跳转的url
         qq_url = qq.get_qq_url()
@@ -47,7 +47,7 @@ class QQAuthUserView(APIView):
         if not code:
             return Response({'message': '缺少code值'}, status=status.HTTP_400_BAD_REQUEST)
 
-        qq = QAuthQQ()
+        qq = OAuthQQ()
         try:
             # 获取access_token值
             access_token = qq.get_access_token(code)
@@ -94,7 +94,6 @@ class QQAuthUserView(APIView):
 
         # 数据验证
         ser = OAuthQQUserSerializer(data=request.data)
-        # ser.is_valid(raise_exception=True)
         ser.is_valid()
         print(ser.errors)
 
