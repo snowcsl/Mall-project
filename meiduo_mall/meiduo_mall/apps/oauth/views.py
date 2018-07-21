@@ -94,6 +94,7 @@ class QQAuthUserView(APIView):
 
         # 数据验证
         ser = OAuthQQUserSerializer(data=request.data)
+        # ser.is_valid(raise_exception=True)
         ser.is_valid()
         print(ser.errors)
 
