@@ -24,6 +24,8 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
     sms_code = serializers.CharField(max_length=6, min_length=6, write_only=True)
     access_token = serializers.CharField(write_only=True)
     token = serializers.CharField(read_only=True)
+    mobile = serializers.RegexField(label='手机号', regex=r'^1[3-9]\d{9}$')
+    # mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
 
     class Meta:
         model = User
@@ -46,11 +48,11 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
         }
 
     # 手机号判断
-    def validate_mobile(self, value):
-        if not re.match(r'^1[3-9]\d{9}$', value):
-            raise serializers.ValidationError('手机号不符合要求')
-
-        return value
+    # def validate_mobile(self, value):
+    #     if not re.match(r'^1[3-9]\d{9}$', value):
+    #         raise serializers.ValidationError('手机号不符合要求')
+    #
+    #     return value
 
     # 多字段判断
     def validate(self, attrs):
