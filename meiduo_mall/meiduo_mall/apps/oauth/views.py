@@ -85,6 +85,7 @@ class QQAuthUserView(APIView):
             )
 
     def post(self, request):
+
         # 数据验证
         ser = OAuthQQUserSerializer(data=request.data)
         ser.is_valid()
