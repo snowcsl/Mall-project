@@ -15,4 +15,4 @@ app = Celery('meiduo')  # 所有的属性和所有的方法都在app这个对象
 app.config_from_object('celery_tasks.config')
 
 # 自动注册celery任务
-app.autodiscover_tasks(['celery_tasks.sms'])
+app.autodiscover_tasks(['celery_tasks.sms','celery_tasks.email'])
