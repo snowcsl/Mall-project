@@ -50,7 +50,7 @@ class EmailView(UpdateAPIView):
 
     serializer_class = serializers.EmailSerializer
 
-    def get_object(self, *args, **kwargs):
+    def get_object(self, *args, **kwargs):  # get_object获取用户对象需要id值，但没有，重写
         return self.request.user
 
 
@@ -66,11 +66,12 @@ class VerifyEmailView(APIView):
             return Response({'message': '缺少token'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 验证token
-        user = User.check_verify_email_token(token)
+        user = User.check_verify_email_token(token)  # 加密 & 用户查询
+
         if user is None:
             return Response({'message': '链接信息无效'}, status=status.HTTP_400_BAD_REQUEST)
         else:
-            user.email_active = True
+            user.email_active = True  # 状态更新
             user.save()
             return Response({'message': 'OK'})
 

@@ -15,8 +15,8 @@ class UserDetailViewSerializer(serializers.ModelSerializer):
         fields = ('id', 'username', 'mobile', 'email', 'email_active')
 
 
-# 验证用户提交的邮箱信息
-class EmailSerializer(serializers.ModelSerializer):
+# 验证用户提交的邮箱信息   保存的过程中发送链接
+class EmailSerializer(serializers.ModelSerializer):  # 邮箱存在于用户模型类中，选择ModelSerializer
     """
     邮箱序列化器
     """
@@ -26,14 +26,14 @@ class EmailSerializer(serializers.ModelSerializer):
         fields = ('id', 'email')
         extra_kwargs = {
             'email': {
-                'required': True
+                'required': True # 必须传过来一个email值，模型类指定的字段类型是null
             }
         }
 
     def update(self, instance, validated_data):
         """
 
-        :param instance:  视图传过来的user对象
+        :param instance:  视图传过来的需要更新的user对象
         :param validated_data:
         :return:
         """
@@ -46,10 +46,11 @@ class EmailSerializer(serializers.ModelSerializer):
         # 生成激活链接
         url = instance.generate_verify_email_url()
 
-        # 发送邮件
+        # 发送邮件 --> 数据保存的时候发送邮件
         send_verify_email.delay(email, url)
 
         return instance
+        # 数据返回时根据关联性进行返回，如果不确定的话，返回出密码之外所有的数据
 
 
 class UserAddressSerializer(serializers.ModelSerializer):

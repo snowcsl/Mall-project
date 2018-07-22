@@ -92,9 +92,12 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
             user = User.objects.get(mobile=attrs['mobile'])
         except:
             user = None
+            return attrs
 
         if user is not None and user.check_password(attrs['password']):
             attrs['user'] = user
+        else:
+            raise serializers.ValidationError('密码错误')
 
         return attrs
 
