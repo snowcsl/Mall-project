@@ -12,15 +12,15 @@ class AreaSerializer(serializers.ModelSerializer):
         fields = ('id', 'name')
 
 
-class SubAreaSerializer(serializers.ModelSerializer):
-    """
-    子行政区划信息序列化器
-    """
-    subs = AreaSerializer(many=True, read_only=True)
-
-    class Meta:
-        model = Area
-        fields = ('id', 'name', 'subs')
+# class SubAreaSerializer(serializers.ModelSerializer):
+#     """
+#     子行政区划信息序列化器
+#     """
+#     subs = AreaSerializer(many=True, read_only=True)  # 关联嵌套序列化
+#
+#     class Meta:
+#         model = Area
+#         fields = ('id', 'name', 'subs')  # subs 反向引用
 
         # 如:
         # {
