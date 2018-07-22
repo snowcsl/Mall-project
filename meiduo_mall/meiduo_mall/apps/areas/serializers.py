@@ -2,19 +2,29 @@ from rest_framework import serializers
 from .models import Area
 
 
-class AreaSerializers(serializers.ModelSerializer):
+from rest_framework import serializers
+
+from .models import Area
+
+
+class AreaSerializer(serializers.ModelSerializer):
+    """
+    行政区划信息序列化器
+    """
     class Meta:
         model = Area
         fields = ('id', 'name')
 
 
-class SubAreaSerializers(serializers.ModelSerializer):
-    sub = AreaSerializers(many=True,read_only=True)
+class SubAreaSerializer(serializers.ModelSerializer):
+    """
+    子行政区划信息序列化器
+    """
+    subs = AreaSerializer(many=True, read_only=True)
 
     class Meta:
         model = Area
-        fields = ('id', 'name','subs')
-
+        fields = ('id', 'name', 'subs')
         # 如:
         # {
         #     "id": "110100",

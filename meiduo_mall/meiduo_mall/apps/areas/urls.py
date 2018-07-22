@@ -3,11 +3,10 @@ from rest_framework.routers import DefaultRouter
 
 from . import views
 
-urlpatterns = [
-]
-
 router = DefaultRouter()
-router.register('areas', views.AreasViewSet, base_name='areas')
+router.register(r'areas', views.AreasViewSet, base_name='areas')
+
+urlpatterns = []
 
 urlpatterns += router.urls
 
