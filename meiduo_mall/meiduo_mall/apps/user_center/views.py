@@ -84,19 +84,19 @@ class AddressViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericVi
     用户地址新增与修改
     """
     serializer_class = serializers.UserAddressSerializer
-    permission_classes = [IsAuthenticated]
+    permissions = [IsAuthenticated]
 
-    def get_queryset(self):
-        return self.request.user.addresses.filter(is_delete=False)
+    def get_queryset(self):  # 返回视图使用的查询集，主要用来提供给Mixin扩展类使用
+        return self.request.user.addresses.filter(is_deleted=False)
 
-    # GET/addresses
+    # GET /addresses/
     def list(self, request, *args, **kwargs):
         """
         用户地址列表数据
         """
-        queryset = self.get_queryset()  # 查询集
-        serializers = self.get_serializer(queryset, many=True)
-        user=self.request.user
+        queryset = self.get_queryset() # 查询集
+        serializer = self.get_serializer(queryset, many=True)  # get_serializer返回序列化器对象
+        user = self.request.user
         return Response({
             'user_id': user.id,
             'default_address_id': user.default_address_id,
