@@ -1,8 +1,4 @@
 from rest_framework import serializers
-from .models import Area
-
-
-from rest_framework import serializers
 
 from .models import Area
 
@@ -25,6 +21,7 @@ class SubAreaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Area
         fields = ('id', 'name', 'subs')
+
         # 如:
         # {
         #     "id": "110100",

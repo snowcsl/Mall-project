@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-
+from users.models import User
 from user_center import constants
 from user_center import serializers
 from user_center.serializers import UserDetailViewSerializer
@@ -28,7 +28,6 @@ from rest_framework.decorators import action
 #         ser = UserDetailViewSerializer(user)
 #
 #         return Response(ser.data)
-from users.models import User
 
 
 class UserDetailView(RetrieveAPIView):

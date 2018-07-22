@@ -25,6 +25,7 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
     access_token = serializers.CharField(write_only=True)
     token = serializers.CharField(read_only=True)
     mobile = serializers.RegexField(label='手机号', regex=r'^1[3-9]\d{9}$')
+
     # mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号')
 
     class Meta:

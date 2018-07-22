@@ -1,7 +1,5 @@
 from django.conf import settings
-from django.shortcuts import render
 from rest_framework.views import APIView
-from urllib.parse import urlencode
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_jwt.settings import api_settings
@@ -13,8 +11,6 @@ from oauth.utils import OAuthQQ
 
 
 # Create your views here.
-
-
 class QQAuthURLView(APIView):
     """
     获取QQ登录的url

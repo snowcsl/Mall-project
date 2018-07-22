@@ -1,26 +1,12 @@
-from django.shortcuts import render
-from rest_framework.generics import GenericAPIView
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
-from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework_extensions.cache.mixins import CacheResponseMixin
-
-from areas.models import Area
 from areas.serializers import AreaSerializer, SubAreaSerializer
-from . import serializers
-
-
-
-# Create your views here.
-# class AreasViewSet(ListModelMixin,RetrieveModelMixin,GenericAPIView)
-from django.shortcuts import render
 from rest_framework.viewsets import ReadOnlyModelViewSet
-
 from .models import Area
-# from .serializers import AreaSerializer, SubAreaSerializer
+
 
 # Create your views here.
 
 
+# class AreasViewSet(ListModelMixin,RetrieveModelMixin,GenericAPIView)
 class AreasViewSet(ReadOnlyModelViewSet):
     """
     行政区划信息
