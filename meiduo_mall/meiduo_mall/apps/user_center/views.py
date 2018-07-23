@@ -8,10 +8,9 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from users.models import User
 from user_center import constants
-from user_center import serializers
 from user_center.serializers import UserDetailViewSerializer
 from rest_framework.decorators import action
-
+from user_center import serializers
 
 # Create your views here.
 # class UserDetailView(APIView):
@@ -103,6 +102,57 @@ class AddressViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericVi
             'limit': constants.USER_ADDRESS_COUNTS_LIMIT,
             'addresses': serializer.data,
         })
+
+    # POST /addresses/
+    def create(self, request, *args, **kwargs):
+        """
+        保存用户地址数据
+        """
+        # 检查用户地址数目不能超过上限
+        count=request.user.addresses.count()
+        if count >= constants.USER_ADDRESS_COUNTS_LIMIT:
+            return Response({'messages':'保存地址数据已达到上限'},status=status.HTTP_400_BAD_REQUEST)
+        return super().create(request,*args,**kwargs)
+
+    # delete /addresses/<pk>/
+    def destroy(self, request, *args, **kwargs):
+        """
+        处理删除
+        :return:
+        """
+        address=self.get_object()
+
+        # 进行逻辑删除
+        address.is_deleted=True
+        address.save()
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    # put /addresses/pk/status/
+    @action(methods=['put'], detail=True)
+    def status(self,request,pk=None):
+        """
+        设置默认地址
+        :param request:
+        :param pk:
+        :return:
+        """
+        address=self.get_object()
+        request.user.default_address=address
+        request.user.save()
+        return Response({'message':'ok'},status=status.HTTP_200_OK)
+
+    # put /addresses/pk/title/   需要请求体参数 title
+    @action(methods=['put'], detail=True)
+    def title(self,request,pk=None):
+        """修改标题"""
+        address=self.get_object()
+        serializer=serializers.AddressTitleSerializer(instance=address,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
 
 
 

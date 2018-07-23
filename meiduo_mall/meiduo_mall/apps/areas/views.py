@@ -10,7 +10,7 @@ from .models import Area
 
 
 # Create your views here.
-# # 实现方式1
+# 实现方式1
 # class AreasView(ListAPIView):  # 获取省
 #     serializer_class = AreaSerializer  # 过滤省的信息
 #     queryset = Area.objects.filter(parent=None)

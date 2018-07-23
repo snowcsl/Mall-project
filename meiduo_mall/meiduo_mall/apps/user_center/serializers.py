@@ -60,7 +60,7 @@ class UserAddressSerializer(serializers.ModelSerializer):
     province = serializers.StringRelatedField(read_only=True)
     city = serializers.StringRelatedField(read_only=True)
     district = serializers.StringRelatedField(read_only=True)
-    province_id = serializers.IntegerField(label='省ID', required=True)
+    province_id = serializers.IntegerField(label='省ID', required=True)    # required是限制必须写的字段
     city_id = serializers.IntegerField(label='市ID', required=True)
     district_id = serializers.IntegerField(label='区ID', required=True)
 
