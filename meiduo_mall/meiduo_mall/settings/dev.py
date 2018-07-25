@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'oauth.apps.OauthConfig',
     'user_center.apps.UserCenterConfig',
     'areas.apps.AreasConfig',
+    'goods.apps.GoodsConfig',
+    'contents.apps.ContentsConfig'
 
 ]
 
@@ -203,6 +205,7 @@ LOGGING = {
     }
 }
 
+
 REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'meiduo_mall.utils.exceptions.exception_handler',
@@ -215,6 +218,7 @@ REST_FRAMEWORK = {
     ),
 }
 
+
 # JWT
 # JWT_EXPIRATION_DELTA 指明token的有效期
 JWT_AUTH = {
@@ -225,10 +229,12 @@ JWT_AUTH = {
 # 配置自定义的用户模型类
 AUTH_USER_MODEL = 'users.User'
 
+
 # 认证方法 在配置文件中告知Django使用我们自定义的认证后端
 AUTHENTICATION_BACKENDS = [
     'users.utils.UsernameMobileAuthBackend',
 ]
+
 
 # CORS
 CORS_ORIGIN_WHITELIST = (
@@ -239,11 +245,13 @@ CORS_ORIGIN_WHITELIST = (
 )
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
 
+
 # QQ登录参数
 QQ_CLIENT_ID = '101474184'  # appid
 QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'  # appkey
 QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html'  # qq登陆成功跳转的网址
 QQ_STATE = '/'  # 前端没有传状态时,返回首页
+
 
 # 设置邮箱的配置信息
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -255,6 +263,7 @@ EMAIL_HOST_USER = '18800265204@163.com'
 EMAIL_HOST_PASSWORD = 'zx1234'
 # 收件人看到的发件人
 EMAIL_FROM = 'python<18800265204@163.com>'
+
 
 # DRF扩展  针对于全局
 # REST_FRAMEWORK_EXTENSIONS = {
