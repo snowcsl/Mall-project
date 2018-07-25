@@ -23,3 +23,4 @@ from contents.crons import generate_static_index_html
 
 if __name__ == '__main__':
     generate_static_index_html()
+
