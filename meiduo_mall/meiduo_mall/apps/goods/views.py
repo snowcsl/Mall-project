@@ -6,7 +6,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import ListCacheResponseMixin
 from goods.models import SKU
-from goods.serializers import SKUSerializer, AddUserBrowsingHistorySerializer
+from goods.serializers import SKUSerializer, AddUserBrowsingHistorySerializer, SKUIndexSerializer
+from drf_haystack.viewsets import HaystackViewSet
+
 
 # Create your views here.
 # class HotSKUListView(GenericAPIView):
@@ -69,3 +71,11 @@ class SKUListView(ListAPIView):
     def get_queryset(self):
         category_id = self.kwargs['category_id']
         return SKU.objects.filter(category_id=category_id, is_launched=True)
+
+
+class SKUSearchViewSet(HaystackViewSet):
+    """
+    SKU搜索
+    """
+    index_models = [SKU]
+    serializer_class = SKUIndexSerializer

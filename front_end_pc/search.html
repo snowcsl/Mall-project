@@ -281,11 +281,11 @@
         <div class=" clearfix">
             <ul class="goods_type_list clearfix">
                 <li v-for="sku in skus">
-                    <a :href=sku.url><img :src="sku.default_image_url"></a>
-                    <h4><a :href=sku.url>[[sku.name]]</a></h4>
+                    <a :href=sku.url><img :src="sku.object.default_image_url"></a>
+                    <h4><a :href=sku.url>[[sku.object.name]]</a></h4>
                     <div class="operate">
-                        <span class="prize">￥[[sku.price]]</span>
-                        <span>[[sku.comments]]评价</span>
+                        <span class="prize">￥[[sku.object.price]]</span>
+                        <span>[[sku.object.comments]]评价</span>
                     </div>
                 </li>
             </ul>

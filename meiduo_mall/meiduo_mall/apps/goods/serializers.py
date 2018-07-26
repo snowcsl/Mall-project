@@ -1,7 +1,9 @@
 from django_redis import get_redis_connection
+from drf_haystack.serializers import HaystackSerializer
 from rest_framework import serializers
 
 from goods.models import SKU
+from goods.search_indexes import SKUIndex
 
 """
 id	int	是	商品sku 编号
@@ -58,3 +60,13 @@ class AddUserBrowsingHistorySerializer(serializers.Serializer):
 
         # 返回
         return validated_data
+
+
+class SKUIndexSerializer(HaystackSerializer):
+    """
+    SKU索引结果数据序列化器
+    """
+    object=SKUSerializer(read_only=True)
+    class Meta:
+        index_classes = [SKUIndex]
+        fields = ('text', 'object')
