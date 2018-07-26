@@ -1,5 +1,6 @@
 from django.shortcuts import render
-from rest_framework.generics import ListAPIView,GenericAPIView, CreateAPIView
+from django_redis import get_redis_connection
+from rest_framework.generics import ListAPIView, GenericAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_extensions.cache.mixins import ListCacheResponseMixin
@@ -27,9 +28,8 @@ class HotSKUListView(ListAPIView):
     serializer_class = SKUSerializer
 
     def get_queryset(self):
-
-        category_id=self.kwargs['category_id']
-        return SKU.objects.filter(category_id=category_id,is_launched=True).order_by('-sales')[:5]
+        category_id = self.kwargs['category_id']
+        return SKU.objects.filter(category_id=category_id, is_launched=True).order_by('-sales')[:5]
 
 
 class UserBrowsingHistoryView(CreateAPIView):
@@ -38,3 +38,17 @@ class UserBrowsingHistoryView(CreateAPIView):
     """
     serializer_class = AddUserBrowsingHistorySerializer
     permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        # 从缓存中获取数据id
+        conn = get_redis_connection('history')
+        skus = conn.lrange('history_%s' % request.user.id, 0, 5)
+
+        sku_list = []
+        # 遍历取出sku对象
+        for sku_id in skus:
+            sku=SKU.objects.get(id=sku_id)
+            sku_list.append(sku)
+        ser=SKUSerializer(sku_list,many=True)
+
+        return Response(ser.data)

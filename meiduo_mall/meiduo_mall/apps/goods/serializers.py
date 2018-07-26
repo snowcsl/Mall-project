@@ -26,34 +26,35 @@ class AddUserBrowsingHistorySerializer(serializers.Serializer):
     """
     添加用户浏览历史序列化器
     """
-    sku_id = serializers.IntegerField(label='商品SKU编号', min_value=1)
+    sku_id = serializers.IntegerField(label="商品SKU编号", min_value=1)
 
     def validate_sku_id(self, value):
-        """检查sku_id是否存在"""
+        """
+        检验sku_id是否存在
+        """
         try:
             SKU.objects.get(id=value)
-        except:
+        except SKU.DoesNotExist:
             raise serializers.ValidationError('该商品不存在')
         return value
 
     def create(self, validated_data):
-        """保存"""
-        # 获取用户id
-        user_id = self.context['request'].user.id
 
-        sku_id = validated_data['sku_id']
+        # 获取用户id值
+        id = self.context['request'].user.id
 
         # 建立缓存链接
-        redis_conn = get_redis_connection('history')
-
-        pl = redis_conn.pipeline()
-
-        # 移除已存在的本商品的浏览记录
-        pl.lrem('history_%s' % user_id, 0, sku_id)
+        conn = get_redis_connection('history')
+        # 数据保存  列表形式  集合
+        # 通过删除的形式来判断重复数据
+        pl = conn.pipeline()
+        pl.lrem('history_%s' % id, 0, validated_data['sku_id'])
         # 写入
-        pl.lpush('history_%s' % user_id, sku_id)
-        # 控制存存储的数量
-        pl.ltrim('history_%s' % user_id, 0, 5)
+        pl.lpush('history_%s' % id, validated_data['sku_id'])
+        # 控制存储数量
+        pl.ltrim('history_%s' % id, 0, 5)
 
         pl.execute()
+
+        # 返回
         return validated_data
