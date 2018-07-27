@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from django_redis import get_redis_connection
+from rest_framework import response
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -167,3 +168,72 @@ class CartView(APIView):
 
         # 返回数据
         return Response(ser.data)
+
+    def put(self, request):
+        """
+        1.获取数据
+        2.验证shuju
+        3.提取验证后的数据
+        4.判断用户是否登录
+        5.如果用户已经登录，从Redis中获取数据，更新数量关系和选中状态
+        6.如果用户未登录，从cookie中获取数据，
+        先判断是否存在数据，存在数据再解密，数据更新，加密，写入cookie
+        7.返回Response
+        :param request:
+        :return:
+        """
+        # 验证数据
+        ser = CartSerializer(data=request.data)
+        ser.is_valid()
+        print(ser.errors)
+
+        # 提取验证后的数据
+        sku_id = ser.validated_data.get('sku_id')
+        count = ser.validated_data.get('count')
+        selected = ser.validated_data.get('selected')
+
+        # 判断用户是否登录
+        try:
+            user = request.user
+        except:
+            user = None
+
+        if user is not None:
+            # 如果用户已经登录，从Redis中获取数据
+            conn = get_redis_connection('cart')
+
+            # 更新数量关系
+            conn.hset('cart_%s' % user.id, sku_id, count)
+
+            # 更新选中状态
+            if selected:
+                conn.sadd('cart_select_%s' % user.id, sku_id)
+            else:
+                conn.srem('cart_select_%s' % user.id, sku_id)
+
+            return Response(ser.data)
+
+        else:
+            # 如果用户未登录，从cookie中获取数据
+            # 先判断是否存在cookie
+            cart_cookie = request.COOKIES.get('cart_cookie')
+            if cart_cookie:
+                cart_dict = pickle.loads(base64.b64decode(cart_cookie.encode()))
+            else:
+                cart_dict = {}
+
+            # 数据更新
+            cart_dict[sku_id] = {
+                'count': count,
+                'selected': selected
+            }
+
+            # 加密处理
+            cart_cookie = base64.b64encode(pickle.dumps(cart_dict)).decode()
+
+            response = Response(ser.data)
+
+            # 写入cookie
+            response.set_cookie('cart_cookie', cart_cookie, 60 * 60 * 24 * 7)
+
+            return response
