@@ -8,7 +8,7 @@ from rest_framework import response
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from carts.serializer import CartSerializer, CartSKUSerializer
+from carts.serializer import CartSerializer, CartSKUSerializer, CartDeleteSerializer
 from goods.models import SKU
 
 
@@ -22,7 +22,7 @@ class CartView(APIView):
 
     def post(self, request):
         """
-          获取前端数据 sku_id  count
+        获取前端数据 sku_id  count
         1.验证数据
         2.提取验证后的数据
         3.判断用户是否登陆
@@ -232,6 +232,65 @@ class CartView(APIView):
             cart_cookie = base64.b64encode(pickle.dumps(cart_dict)).decode()
 
             response = Response(ser.data)
+
+            # 写入cookie
+            response.set_cookie('cart_cookie', cart_cookie, 60 * 60 * 24 * 7)
+
+            return response
+
+    def delete(self, request):
+        """
+        1.获取数据
+        2.验证数据
+        3.提取验证后的数据
+        4.判断用户是否登录
+        5.如果用户已经登录，从redis中获取数据，删除数量关系或者删除选中状态，返回状态
+        6.用户未登录，从cookie中获取数据，如果存在数据，解密，判断数据并删除，加密处理，写入cookie,并返回状态
+        :param request:
+        :return:
+        """
+
+        # 验证数据
+        ser = CartDeleteSerializer(data=request.data)
+        ser.is_valid()
+        print(ser.errors)
+
+        # 提取验证后的数据
+        sku_id = ser.validated_data['sku_id']
+
+        # 判断用户是否登录
+        try:
+            user = request.user
+        except:
+            user = None
+
+        if user is not None:
+            # 如果用户已经登录，从Redis中获取数据
+            conn = get_redis_connection('cart')
+
+            # 删除数量关系
+            conn.hdel('cart_%s' % user.id, sku_id)
+            # 删除选中状态
+            conn.srem('cart_select_%s' % user.id, sku_id)
+
+            return Response(status=200)
+
+        else:
+            # 用户未登录  数据保存在cookie
+            # 先判断有木有cookie数据
+            cart_cookie = request.COOKIES.get('cart_cookie')
+
+            if cart_cookie:
+
+                cart_dict = pickle.loads(base64.b64decode(cart_cookie.encode()))
+
+                if sku_id in cart_dict:
+                    del cart_dict[sku_id]
+
+                # 加密处理
+                cart_cookie = base64.b64encode(pickle.dumps(cart_dict)).decode() # b64encode  decode
+
+            response = Response(status=200)
 
             # 写入cookie
             response.set_cookie('cart_cookie', cart_cookie, 60 * 60 * 24 * 7)
