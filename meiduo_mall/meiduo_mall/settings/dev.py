@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'ckeditor_uploader',  # 富文本编辑器上传图片模块
     'django_crontab',  # 定时任务
     'haystack',  # 使用haystack对接Elasticsearch
+    'carts.apps.CartsConfig'
 
 
 ]
@@ -136,6 +137,13 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
+    "cart": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": "redis://127.0.0.1:6379/4",
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        }
 
 }
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
