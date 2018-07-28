@@ -48,6 +48,6 @@ def merge_cart_cookie_to_redis(request, response, user):
     if len(cart_selected_none):
         conn.srem('cart_select_%s' % user.id, *cart_selected_none)
 
-    response.delete_cookie('cart_cookie')
+    response.delete_cookie('cart_cookie')  # 清空cookie
 
     return response

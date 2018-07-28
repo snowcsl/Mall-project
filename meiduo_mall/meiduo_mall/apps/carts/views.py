@@ -40,6 +40,9 @@ class CartView(APIView):
         print(ser.errors)
 
         # 2.提取验证后的数据
+        if not ser.is_valid():
+            return Response({'message': '库存不足'},status=400)
+
         sku_id = ser.validated_data.get('sku_id')
         count = ser.validated_data.get('count')
         selected = ser.validated_data.get('selected')
