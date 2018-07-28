@@ -8,7 +8,7 @@ from rest_framework import response
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from carts.serializer import CartSerializer, CartSKUSerializer, CartDeleteSerializer
+from carts.serializer import CartSerializer, CartSKUSerializer, CartDeleteSerializer, CartSelectAllSerializer
 from goods.models import SKU
 
 
@@ -40,9 +40,9 @@ class CartView(APIView):
         print(ser.errors)
 
         # 2.提取验证后的数据
-        sku_id = ser.validated_data['sku_id']
-        count = ser.validated_data['count']
-        selected = ser.validated_data['selected']
+        sku_id = ser.validated_data.get('sku_id')
+        count = ser.validated_data.get('count')
+        selected = ser.validated_data.get('selected')
 
         # 3.判断用户是否登陆
         try:
@@ -60,7 +60,7 @@ class CartView(APIView):
 
             # 选中状态存储
             if selected:
-                conn.sadd('cart_%s' % user.id, sku_id)
+                conn.sadd('cart_select_%s' % user.id, sku_id)
 
             return Response({'message': 'ok'})
 
@@ -79,10 +79,11 @@ class CartView(APIView):
 
             # 存在则累加
             if sku_dict:
-                # sku_dict['count'] += count
-                data = int(sku_dict['count'])
-                data += count
-                sku_dict['count'] = data
+                count += int(sku_dict.get('count'))
+
+                # data = int(sku_dict['count'])
+                # data += count
+                # sku_dict['count'] = data
 
             # 不存在  组建新的数据字典
             cart_dict[sku_id] = {
@@ -288,11 +289,84 @@ class CartView(APIView):
                     del cart_dict[sku_id]
 
                 # 加密处理
-                cart_cookie = base64.b64encode(pickle.dumps(cart_dict)).decode() # b64encode  decode
+                cart_cookie = base64.b64encode(pickle.dumps(cart_dict)).decode()  # b64encode  decode
 
             response = Response(status=200)
 
             # 写入cookie
+            response.set_cookie('cart_cookie', cart_cookie, 60 * 60 * 24 * 7)
+
+            return response
+
+
+class CartSelectAllView(APIView):
+    """
+    购物车全选
+    """
+
+    def perform_authentication(self, request):
+        pass
+
+    def put(self, request):
+        # 验证数据
+        ser = CartSelectAllSerializer(data=request.data)
+        ser.is_valid()
+        print(ser.errors)
+
+        # 提取验证后的数据
+        selected = ser.validated_data['selected']
+
+        # 判断用户是否登录
+        try:
+            user = request.user
+        except:
+            user = None
+
+        if user is not None:
+            conn = get_redis_connection('cart')
+
+            # 获取所有的sku_id
+            cart = conn.hgetall('cart_%s' % user.id)
+            sku_ids = cart.keys()
+
+            # 更新状态
+            if selected:
+                conn.sadd('cart_select_%s' % user.id, *sku_ids)
+            else:
+                conn.srem('cart_select_%s' % user.id, *sku_ids)
+
+            return Response(ser.data)
+
+        else:
+            # 用户未登录 数据保存在cookie中
+            cart_cookie = request.COOKIES.get('cart_cookie')
+            if cart_cookie:
+                cart_dict = pickle.loads(base64.b64decode(cart_cookie.encode()))
+
+                '''
+                                {
+                                    sku_id: {
+                                        "count": xxx,  // 数量
+                                        "selected": True  // 是否勾选
+                                    },
+                                    sku_id: {
+                                        "count": xxx,
+                                        "selected": False
+                                    },
+                                    ...
+                                }
+
+                            '''
+
+                for sku_id in cart_dict.keys():
+                    cart_dict[sku_id]['selected'] = selected
+
+                # 加密
+                cart_cookie = base64.b64encode(pickle.dumps(cart_dict)).decode()
+
+            # 写入cookie
+            response = Response(ser.data)
+
             response.set_cookie('cart_cookie', cart_cookie, 60 * 60 * 24 * 7)
 
             return response
