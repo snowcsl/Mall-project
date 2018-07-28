@@ -13,13 +13,12 @@ def merge_cart_cookie_to_redis(request, response, user):
     :param response: 响应对象，用于清楚购物车cookie
     :return:
     """
-    cart_cookie = request.COOKIES.get('cart_cookie', None)
 
+    cart_cookie = request.COOKIES.get('cart_cookie', None)
     # 没有cookie数据直接返回
     if not cart_cookie:
         return response
-
-    # 解密
+    # 解密cookie
     cart_dict = pickle.loads(base64.b64decode(cart_cookie.encode()))
 
     # {sku_id1:10,sku_id2,9}
@@ -39,7 +38,7 @@ def merge_cart_cookie_to_redis(request, response, user):
         else:
             cart_selected_none.append(sku_id)
 
-    # 连接缓存数据库
+    # 写入缓存
     conn = get_redis_connection('cart')
     # 写入数量关系
     conn.hmset('cart_%s' % user.id, cart)
