@@ -87,7 +87,7 @@ class QQAuthUserView(APIView):
                 }
             )
 
-            response = merge_cart_cookie_to_redis(request, user, response)
+            # response = merge_cart_cookie_to_redis(request, user, response)
 
             return response
 
@@ -102,5 +102,5 @@ class QQAuthUserView(APIView):
         # 保存
         ser.save()
         response = Response(ser.data)
-        response = merge_cart_cookie_to_redis(request, response, user)
+        # response = merge_cart_cookie_to_redis(request, response, user)
         return response
