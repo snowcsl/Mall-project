@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework_jwt.settings import api_settings
 from itsdangerous import TimedJSONWebSignatureSerializer as TJS
 
+from carts.utils import merge_cart_cookie_to_redis
 from oauth.models import OAuthQQUser
 from oauth.serializers import OAuthQQUserSerializer
 from oauth.utils import OAuthQQ
@@ -78,7 +79,7 @@ class QQAuthUserView(APIView):
             payload = jwt_payload_handler(user)
             token = jwt_encode_handler(payload)
 
-            return Response(
+            response = Response(
                 {
                     'token': token,
                     'user_id': user.id,
@@ -86,15 +87,20 @@ class QQAuthUserView(APIView):
                 }
             )
 
+            response = merge_cart_cookie_to_redis(request, user, response)
+
+            return response
+
     def post(self, request):
 
         # 数据验证
         ser = OAuthQQUserSerializer(data=request.data)
         ser.is_valid()
         print(ser.errors)
+        user = ser.validated_data['user']
 
         # 保存
         ser.save()
-
-        # 返回数据
-        return Response(ser.data)
+        response = Response(ser.data)
+        response = merge_cart_cookie_to_redis(request, response, user)
+        return response

@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'haystack',  # 使用haystack对接Elasticsearch
     'carts.apps.CartsConfig',
     'orders.apps.OrdersConfig',
+    'payment.apps.PaymentConfig'
 
 
 ]
