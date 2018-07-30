@@ -83,7 +83,8 @@ var vm = new Vue({
 
 
             axios.get(this.host + '/oauth/qq/authorization/?state=' + state, {
-                    responseType: 'json'
+                    responseType: 'json',
+                    withCredentials: true  //发送请求的时候携带cookie数据
                 })
                 .then(response => {
                     // 引导用户跳转到qq登录页面
